@@ -1,7 +1,7 @@
 def login(username, password):
     return 0
 
-def load(file):
+def load(user, file):
     if(open(file) == 1):
         return 0
     else:
@@ -15,20 +15,20 @@ def convert_to_str(file):
     else:
         return -1
 
-def upload_doc(document):
+def upload_doc(user, document):
     if(load(document)):
         return 0
     else:
         return -1
 
-def upload_pdf(document):
+def upload_pdf(user, document):
     if(load(document)):
         convert_to_str(document)
         return 0
     else:
         return -1
 
-def upload_image(img):
+def upload_image(user, img):
     return 0 # Convert to img to text
 
 def tag_document(documents):
