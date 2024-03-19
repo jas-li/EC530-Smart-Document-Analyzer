@@ -42,3 +42,4 @@ def get_keyword_definitions(keywords):
 
 def summarize_document(doc_text):
     return 0 # Return the summary of a document
+
