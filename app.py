@@ -30,3 +30,13 @@ def disp(num):
 if __name__ == '__main__': 
   
     app.run(debug = True) 
+
+###############
+
+from pymongo import MongoClient
+
+# Connect to the MongoDB instance running on localhost at port 27017
+client = MongoClient('mongodb://localhost:27017/')
+
+# Access a specific database, if it doesn't exist, MongoDB will create it when you write data
+db = client['your_database_name']
