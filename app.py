@@ -1,42 +1,26 @@
-# Using flask to make an api 
-# import necessary libraries and functions 
-from flask import Flask, jsonify, request 
-  
-# creating a Flask app 
-app = Flask(__name__) 
-  
-# on the terminal type: curl http://127.0.0.1:5000/ 
-# returns hello world when we use GET. 
-# returns the data that we send when we use POST. 
-@app.route('/', methods = ['GET', 'POST']) 
-def home(): 
-    if(request.method == 'GET'): 
-  
-        data = "hello world"
-        return jsonify({'data': data}) 
-  
-  
-# A simple function to calculate the square of a number 
-# the number to be squared is sent in the URL when we use GET 
-# on the terminal type: curl http://127.0.0.1:5000 / home / 10 
-# this returns 100 (square of 10) 
-@app.route('/home/<int:num>', methods = ['GET']) 
-def disp(num): 
-  
-    return jsonify({'data': num**2}) 
-  
-  
-# driver function 
-if __name__ == '__main__': 
-  
-    app.run(debug = True) 
+from flask import Flask, request
+from config import Config
+from auth import auth
+from secure_upload import process_file
+from flask_cors import CORS
 
-###############
+app = Flask(__name__)
+CORS(app)
+app.config.from_object(Config)
 
-from pymongo import MongoClient
+@app.route('/upload', methods=['POST'])
+@auth.login_required
+def upload_file():
+    if 'file' not in request.files:
+        return {"error": "No file part"}, 400
+    file = request.files['file']
+    if file.filename == '':
+        return {"error": "No selected file"}, 400
+    try:
+        response = process_file(file)
+        return response
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-# Connect to the MongoDB instance running on localhost at port 27017
-client = MongoClient('mongodb://localhost:27017/')
-
-# Access a specific database, if it doesn't exist, MongoDB will create it when you write data
-db = client['your_database_name']
+if __name__ == '__main__':
+    app.run(debug=True)
