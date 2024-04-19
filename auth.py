@@ -18,7 +18,8 @@ def verify_password(username, password):
     if user_doc:
         stored_password = user_doc["password"]
         # Decode the stored password & compare
-        return bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8'))
+        if bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8')):
+            return user_doc
     return False
 
 def register():
@@ -32,5 +33,9 @@ def register():
     # Hash the password
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     # Store the hashed password as a decoded string for storage
-    users_collection.insert_one({"username": username, "password": hashed_password.decode('utf-8')})
+    users_collection.insert_one({
+        "username": username,
+        "password": hashed_password.decode('utf-8'),
+        "files": []  # Initialize
+    })
     return jsonify({"message": "User registered successfully"}), 201
