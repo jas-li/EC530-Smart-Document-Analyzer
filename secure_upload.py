@@ -54,12 +54,16 @@ def get_files():
     user = auth.current_user()  # Get the authenticated user
     if user:
         user_doc = users_collection.find_one({"_id": user["_id"]})
+        file_dict = {}
         if user_doc:
             user_files = user_doc.get("files", [])  # Get the list of files associated with the user
-            file_names = [fs.get(file).filename for file in user_files]
-            return jsonify({"files": file_names}), 200
+            for file_id in user_files:
+                file_obj = fs.get(file_id)
+                if file_obj:
+                    file_dict[file_obj.filename] = str(file_id)
+            return file_dict, 200
         else:
-            return jsonify({"error": "User not found"}), 404
+            return {}, 404
     else:
-        return jsonify({"error": "Authentication failed"}), 401
+        return {}, 401
 
