@@ -59,7 +59,7 @@ def image_to_text(image_path):
     text = pytesseract.image_to_string(Image.open(image_path))
     return text
 
-grid_out = fs.get(ObjectId('66212b16dafe483a8b74eef6'))
+grid_out = fs.get(ObjectId('6625a7c58b3a61a86b94cf15'))
 
 text = pdf_to_text(grid_out)
 

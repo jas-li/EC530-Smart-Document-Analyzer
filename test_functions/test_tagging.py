@@ -4,6 +4,7 @@ from nltk.tokenize import word_tokenize
 from nltk.probability import FreqDist
 from nltk.tokenize import RegexpTokenizer
 from nltk.stem import PorterStemmer
+from text import text
 
 def preprocess_text(text):
     # Tokenize the text
@@ -40,3 +41,6 @@ def extract_keywords(text, num_keywords=10):
     sorted_keywords = sorted(tfidf.items(), key=lambda x: x[1], reverse=True)
 
     return [keyword[0] for keyword in sorted_keywords[:num_keywords]]
+
+keywords = extract_keywords(text)
+print("Top 10 Keywords:", keywords)

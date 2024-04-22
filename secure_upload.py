@@ -23,13 +23,6 @@ def process_file(file):
     content_type = file.content_type
 
     file_id = fs.put(file, filename=filename, content_type=content_type)
-    # grid_out = fs.get(file_id)
-    # if filename.lower().endswith('pdf'):
-    #     text = pdf_to_text(grid_out)
-    # else:
-    #     text = image_to_text(grid_out)
-
-    # return jsonify({"message": "File processed successfully", "text": text}), 200
     return file_id
 
 def upload_file():
