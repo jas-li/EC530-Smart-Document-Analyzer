@@ -42,8 +42,9 @@ def image_to_text(image_path):
     text = pytesseract.image_to_string(Image.open(image_path))
     return text
 
-def convert_file(filename):
-    files, status_code = get_files()
+def convert_file(filename, user_id):
+    files, status_code = get_files(user_id)
+    print(status_code)
     if status_code != 200:
         return "Error: Unable to retrieve files", 500
     

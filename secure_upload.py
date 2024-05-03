@@ -43,20 +43,15 @@ def upload_file():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-def get_files():
-    user = auth.current_user()  # Get the authenticated user
-    if user:
-        user_doc = users_collection.find_one({"_id": user["_id"]})
-        file_dict = {}
-        if user_doc:
-            user_files = user_doc.get("files", [])  # Get the list of files associated with the user
-            for file_id in user_files:
-                file_obj = fs.get(file_id)
-                if file_obj:
-                    file_dict[file_obj.filename] = str(file_id)
-            return file_dict, 200
-        else:
-            return {}, 404
+def get_files(user_id):
+    user_doc = users_collection.find_one({"_id": user_id})
+    file_dict = {}
+    if user_doc:
+        user_files = user_doc.get("files", [])  # Get the list of files associated with the user
+        for file_id in user_files:
+            file_obj = fs.get(file_id)
+            if file_obj:
+                file_dict[file_obj.filename] = str(file_id)
+        return file_dict, 200
     else:
-        return {}, 401
-
+        return {}, 404

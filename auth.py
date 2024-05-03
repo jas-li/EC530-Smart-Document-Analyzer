@@ -4,6 +4,7 @@ from pymongo import MongoClient
 import certifi
 import bcrypt
 from config import Config
+from hmac import compare_digest
 
 auth = HTTPBasicAuth()
 
@@ -17,8 +18,8 @@ def verify_password(username, password):
     user_doc = users_collection.find_one({"username": username})
     if user_doc:
         stored_password = user_doc["password"]
-        # Decode the stored password & compare
-        if bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8')):
+        # Mitigate timing attacks
+        if compare_digest(bcrypt.hashpw(password.encode('utf-8'), stored_password.encode('utf-8')), stored_password.encode('utf-8')):
             return user_doc
     return False
 
