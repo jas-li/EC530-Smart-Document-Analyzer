@@ -29,7 +29,7 @@ def process_tasks(app):
                 result = extract_keywords(task['text'], num_keywords=10)
                 status_code = 200
             elif task_type == 'text_summary':
-                result = summarize_text(task['text'], num_sentences=5)
+                result = summarize_text(task['text'], num_sentences=3)
                 status_code = 200
             elif task_type == 'doc_conversion':
                 user_id = task['user_id']

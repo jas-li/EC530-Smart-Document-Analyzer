@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';  
+import './Login.css';  // Import the CSS styles
 
 function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    const navigate = useNavigate();  
+    const navigate = useNavigate();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -25,21 +25,21 @@ function Login() {
     };
 
     return (
-        <div>
+        <div className="login-container">
             <h2>Login</h2>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="login-form">
                 <label>
-                    Username:
+                    Username: 
                     <input type="text" value={username} onChange={e => setUsername(e.target.value)} />
                 </label>
                 <label>
-                    Password:
+                    Password: 
                     <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
                 </label>
                 <button type="submit">Login</button>
-                <Link to="/register"><button>Register</button></Link>
+                <Link to="/register"><button type="button">Register</button></Link>
             </form>
-            {error && <p>{error}</p>}
+            {error && <p className="error-message">{error}</p>}
         </div>
     );
 }
