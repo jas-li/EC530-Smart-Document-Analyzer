@@ -1,0 +1,30 @@
+.homepage-container {
+    text-align: center;
+    padding: 20px;
+    background-color: #f5f5f5;  
+  }
+  
+  h1 {
+    color: #2a9d8f;  
+  }
+  
+  p {
+    color: #264653;  
+    margin: 20px auto;
+    max-width: 600px;  
+  }
+  
+  .login-button {
+    background-color: #E76F51;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .login-button:hover {
+    background-color: #ce6044;  
+  }
+  

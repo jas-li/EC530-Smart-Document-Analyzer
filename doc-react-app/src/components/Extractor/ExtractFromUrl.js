@@ -3,6 +3,7 @@ import axios from 'axios';
 
 function ExtractFromUrl({ setExtractedText, setTitle, setTopImage, setIsLoading, setError }) {
     const [url, setUrl] = useState('');
+    const [isHovering, setIsHovering] = useState(false);  // State to manage hover effect
 
     const handleExtractFromUrl = async () => {
         if (!url) {
@@ -21,9 +22,28 @@ function ExtractFromUrl({ setExtractedText, setTitle, setTopImage, setIsLoading,
             setTopImage(response.data.top_image);
             setIsLoading(false);
         } catch (error) {
-            setError(error.response?.data.error);
             setIsLoading(false);
         }
+    };
+
+    // Define inline styles
+    const inputStyle = {
+        padding: '8px',
+        margin: '5px 10px 5px 0',
+        width: '50%', 
+        fontSize: '16px',
+        borderRadius: '4px',
+        border: '1px solid #ccc'
+    };
+
+    const buttonStyle = {
+        padding: '10px 20px',
+        backgroundColor: isHovering ? '#357a38' : '#4caf50', // Green background, darker on hover
+        color: 'white',
+        border: 'none',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        transition: 'background-color 0.3s'
     };
 
     return (
@@ -33,9 +53,17 @@ function ExtractFromUrl({ setExtractedText, setTitle, setTopImage, setIsLoading,
                 placeholder="Enter URL to extract text"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                style={{ marginRight: '10px' }}
+                style={inputStyle}
             />
-            <button onClick={handleExtractFromUrl} disabled={!url.trim()}>Extract Text</button>
+            <button
+                onClick={handleExtractFromUrl}
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
+                disabled={!url.trim()}
+                style={buttonStyle}
+            >
+                Extract Text
+            </button>
         </div>
     );
 }

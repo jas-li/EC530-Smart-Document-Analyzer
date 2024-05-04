@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 
 function DeleteFileButton({ filename, setFiles, setError }) {
+    const [isHovering, setIsHovering] = useState(false);  // State to manage hover effect
+
     const handleDeleteFile = async () => {
         try {
             const response = await axios.post(`http://127.0.0.1:5000/delete_file?filename=${filename}`, {}, {
@@ -19,7 +21,28 @@ function DeleteFileButton({ filename, setFiles, setError }) {
         }
     };
 
-    return <button onClick={handleDeleteFile} style={{ marginLeft: '10px' }}>Delete</button>;
+    // Define inline styles for the button
+    const buttonStyle = {
+        marginLeft: '10px',
+        padding: '10px 20px',
+        backgroundColor: isHovering ? '#d32f2f' : '#f44336', // Red background, darker on hover
+        color: 'white',
+        border: 'none',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        transition: 'background-color 0.3s'
+    };
+
+    return (
+        <button 
+            onClick={handleDeleteFile}
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={() => setIsHovering(false)}
+            style={buttonStyle}
+        >
+            Delete
+        </button>
+    );
 }
 
 export default DeleteFileButton;

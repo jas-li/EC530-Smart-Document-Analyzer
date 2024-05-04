@@ -1,0 +1,76 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; /* This will space out the two main columns */
+    align-items: flex-start; /* Aligns items at the top of the container */
+}
+
+.empty-placeholder {
+    height: 300px;  /* Or any appropriate fixed height */
+    border: 1px solid #ccc; /* Gives a visible boundary to the placeholder */
+    border-radius: 4px; /* Matches other design elements */
+    background-color: #f7f7f7; /* Light background color */
+    overflow-y: scroll; /* Enables vertical scrolling */
+    padding: 10px; /* Adds some padding inside the container */
+    margin-top: 10px; /* Space from other elements */
+}
+
+.left-panel, .right-panel {
+    flex: 1; /* Each panel takes half of the space */
+    padding: 20px;
+    min-height: 100vh; /* Minimum height to take full vertical space */
+}
+
+.left-panel {
+    max-width: 50%;
+}
+
+.right-panel {
+    max-width: 50%;
+}
+.upload-header {
+    color: #2A9D8F; /* Stylish teal color */
+}
+
+.button {
+    background-color: #E76F51; /* Warm coral for the button */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button:hover {
+    background-color: #ce6044; /* Slightly darker when hovered */
+}
+
+.file-list {
+    height: 300px;  /* Or any appropriate fixed height */
+    border: 1px solid #ccc; /* Gives a visible boundary to the placeholder */
+    border-radius: 4px; /* Matches other design elements */
+    background-color: #f7f7f7; /* Light background color */
+    overflow-y: scroll; /* Enables vertical scrolling */
+    padding: 10px; /* Adds some padding inside the container */
+    margin-top: 10px; /* Space from other elements */
+    text-align: left; /* Ensures text inside is aligned to the left */
+}
+
+.file-title {
+    text-align: center; /* Centers the text of the title */
+    width: 100%; /* Ensures the title element spans the full width of its container */
+    margin-top: 0; /* Adjust top margin as needed */
+    margin-bottom: 20px; /* Provides some space below the title */
+}
+
+.file-list-item {
+    margin: 10px 0;
+    padding: 10px;
+}
+
+ul {
+    list-style-type: none; /* Removes bullet points */
+    padding: 0; /* Removes padding, especially the left padding typically seen with lists */
+    margin: 0; /* Optional: Removes the default margin to clean up the layout */
+}

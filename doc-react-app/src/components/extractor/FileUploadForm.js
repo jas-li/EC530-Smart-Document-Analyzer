@@ -3,6 +3,7 @@ import axios from 'axios';
 
 function FileUploadForm({ setFiles, setError, setSuccess }) {
     const [file, setFile] = useState(null);
+    const [isHovering, setIsHovering] = useState(false);  // State to manage hover effect
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -23,10 +24,30 @@ function FileUploadForm({ setFiles, setError, setSuccess }) {
         }
     };
 
+    // Inline styles for the button
+    const buttonStyle = {
+        width: '100px',
+        padding: '10px 20px',
+        backgroundColor: isHovering ? '#3e8e41' : '#4CAF50',  // Change color on hover
+        color: 'white',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        outline: 'none',
+        transition: 'background-color 0.3s'
+    };
+
     return (
-        <form onSubmit={handleSubmit}>
-            <input type="file" onChange={e => setFile(e.target.files[0])} />
-            <button type="submit">Upload</button>
+        <form onSubmit={handleSubmit} style={{ padding: '20px' }}>
+            <input type="file" onChange={e => setFile(e.target.files[0])} style={{ marginBottom: '10px' }} />
+            <button 
+                type="submit" 
+                style={buttonStyle}
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
+            >
+                Upload
+            </button>
         </form>
     );
 }
