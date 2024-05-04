@@ -1,6 +1,7 @@
 # EC530-Smart-Document-Analyzer
 
 ## Overview
+![Sample Usage](./sample_usage.png)
 
 ## Authentication Endpoints
 
