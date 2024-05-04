@@ -1,7 +1,7 @@
 # EC530-Smart-Document-Analyzer
 
 ## Overview
-![Sample Usage](./ec530_demo.gif)
+https://github.com/jas-li/EC530-Smart-Document-Analyzer/assets/90875953/c5b60420-e3b4-41cc-9816-d77df349314e
 
 ## Authentication Endpoints
 
