@@ -61,7 +61,7 @@ httplib2==0.22.0
 idna==3.6
 iniconfig==2.0.0
 ipykernel==6.29.3
-ipython==8.22.2
+ipython==8.12.3
 itsdangerous==2.1.2
 jedi==0.19.1
 jieba3k==0.35.1
