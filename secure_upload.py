@@ -55,3 +55,29 @@ def get_files(user_id):
         return file_dict, 200
     else:
         return {}, 404
+
+def remove_file(user_id, filename):
+    user_doc = users_collection.find_one({"_id": user_id})
+    if not user_doc:
+        return jsonify({"error": "User not found"}), 404
+
+    # Extract files array from the user document.
+    user_files = user_doc.get("files", [])
+    
+    # Locate the file in GridFS by its filename and the user's file IDs.
+    file_obj = fs.find_one({"filename": filename, "_id": {"$in": user_files}})
+    if not file_obj:
+        return jsonify({"error": "File not found"}), 404
+
+    # Attempt to delete the file from GridFS.
+    try:
+        fs.delete(file_obj._id)
+        # Update the user document to remove the file reference.
+        users_collection.update_one(
+            {"_id": user_id},
+            {"$pull": {"files": file_obj._id}}
+        )
+        return jsonify({"success": "File deleted successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+

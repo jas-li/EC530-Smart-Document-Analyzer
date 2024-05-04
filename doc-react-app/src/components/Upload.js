@@ -7,6 +7,8 @@ function Upload() {
     const [files, setFiles] = useState([]);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [selectedFileText, setSelectedFileText] = useState('');
+    const [isLoading, setIsLoading] = useState(false);  // State to manage loading status
 
     const navigate = useNavigate();
 
@@ -22,6 +24,42 @@ function Upload() {
             setFiles(filesArray);
         } catch (error) {
             setError(error.response?.data.error || 'Failed to fetch files');
+        }
+    };
+
+    // Function to convert document to text
+    const handleDocToText = async (fileName) => {
+        setIsLoading(true);  // Start loading
+        try {
+            const response = await axios.get(`http://127.0.0.1:5000/doc_to_text?filename=${fileName}`, {
+                headers: {
+                    'Authorization': `Basic ${sessionStorage.getItem('token')}`
+                }
+            });
+            setSelectedFileText(response.data.text);  // Set the text from response
+            setIsLoading(false);  // End loading after the response is received
+        } catch (error) {
+            setError('Failed to convert document to text.');
+            setIsLoading(false);  // End loading if there is an error
+        }
+    };
+
+    // Function to remove files
+    const handleDeleteFile = async (filename) => {
+        try {
+            const response = await axios.post(`http://127.0.0.1:5000/delete_file?filename=${filename}`, {}, {
+                headers: {
+                    'Authorization': `Basic ${sessionStorage.getItem('token')}`
+                }
+            });
+            if (response.status === 200) {
+                setFiles(files.filter(file => file.name !== filename));  // Update state to remove the deleted file from the list
+            } else {
+                setError(response.data.error || 'Failed to delete file.');
+            }
+        } catch (error) {
+            console.error('Failed to delete file:', error);
+            setError(error.response?.data.error || 'Failed to delete file.');
         }
     };
 
@@ -52,6 +90,7 @@ function Upload() {
     const handleLogout = () => {
         sessionStorage.removeItem('token');
         navigate('/');
+        window.dispatchEvent(new Event('loginChange'));  // Notify app of logout
     };
 
     return (
@@ -62,16 +101,25 @@ function Upload() {
                 <button type="submit">Upload</button>
             </form>
             <button onClick={handleLogout}>Log Out</button>
+            {isLoading && <p>Loading...</p>} 
             {success && <p>{success}</p>}
             {error && <p>{error}</p>}
             <h3>Uploaded Files</h3>
             <ul>
                 {files.map((file, index) => (
-                    <li key={index}>{file.name}</li>
+                    <li key={index}>
+                        {file.name}
+                        <button onClick={() => handleDocToText(file.name)} disabled={isLoading}>Convert to Text</button>
+                        <button onClick={() => handleDeleteFile(file.name)} style={{ marginLeft: '10px' }}>Delete</button>
+                    </li>
                 ))}
             </ul>
+            {selectedFileText && <div>
+                <h3>Document Text</h3>
+                <p>{selectedFileText}</p>
+            </div>}
         </div>
-    );
+    );    
 }
 
 export default Upload;

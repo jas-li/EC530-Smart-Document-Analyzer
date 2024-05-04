@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from config import Config
 from auth import auth, register, login
-from secure_upload import upload_file, get_files
+from secure_upload import upload_file, get_files, remove_file
 from feed_ingest import convert_file, extract_web_content
 from nlp_analysis import extract_keywords, summarize_text, analyze_sentiment
 from output_gen import search_nytimes, search_wikipedia, get_word_definitions
@@ -63,6 +63,16 @@ def login_route():
 @auth.login_required
 def upload_route():
     return upload_file()
+
+@app.route('/delete_file', methods=['POST'])
+@auth.login_required
+def delete_file():
+    user = auth.current_user()
+    file = request.args.get('filename')
+    if not file:
+        return jsonify({"error": "Missing file"}), 400
+
+    return remove_file(user['_id'], file)
 
 @app.route('/get_files', methods=['GET'])
 @auth.login_required

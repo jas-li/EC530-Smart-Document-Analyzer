@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';  
 
@@ -17,8 +18,7 @@ function Login() {
                 password
             });
             sessionStorage.setItem('token', response.data.token);  // Save the token
-            // alert('Login successful');
-            navigate('/upload');  // Redirect to upload page after successful login
+            navigate('/');  // Redirect to homepage after successful login
         } catch (error) {
             setError(error.response.data.error || 'Login failed');
         }
@@ -37,6 +37,7 @@ function Login() {
                     <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
                 </label>
                 <button type="submit">Login</button>
+                <Link to="/register"><button>Register</button></Link>
             </form>
             {error && <p>{error}</p>}
         </div>
