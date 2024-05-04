@@ -1,107 +1,53 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+// Upload.js
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ConvertToTextButton from './extractor/ConvertToTextButton';
+import DeleteFileButton from './extractor/DeleteFileButton';
+import FileUploadForm from './extractor/FileUploadForm';
+import GetFiles from './extractor/GetFiles';  
+import NLP from './NLP'
+import ExtractFromUrl from './ExtractFromUrl';
+
+function formatText(text) {
+    const textParts = text.split('\n').map((line, index) => (
+        <React.Fragment key={index}>
+            {line}
+            <br />
+        </React.Fragment>
+    ));
+    return textParts;
+}
 
 function Upload() {
-    const [file, setFile] = useState(null);
-    const [files, setFiles] = useState([]);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [selectedFileText, setSelectedFileText] = useState('');
-    const [isLoading, setIsLoading] = useState(false);  // State to manage loading status
+    const [isLoading, setIsLoading] = useState(false);
+    const [files, setFiles] = GetFiles(setIsLoading, setError);  
+
+    const [title, setTitle] = useState('');
+    // const [topImage, setTopImage] = useState('');
 
     const navigate = useNavigate();
-
-    // Function to fetch files from the server
-    const fetchFiles = async () => {
-        try {
-            const response = await axios.get('http://127.0.0.1:5000/get_files', {
-                headers: {
-                    'Authorization': `Basic ${sessionStorage.getItem('token')}`
-                }
-            });
-            const filesArray = Object.entries(response.data.files).map(([name, id]) => ({ name, id }));
-            setFiles(filesArray);
-        } catch (error) {
-            setError(error.response?.data.error || 'Failed to fetch files');
-        }
-    };
-
-    // Function to convert document to text
-    const handleDocToText = async (fileName) => {
-        setIsLoading(true);  // Start loading
-        try {
-            const response = await axios.get(`http://127.0.0.1:5000/doc_to_text?filename=${fileName}`, {
-                headers: {
-                    'Authorization': `Basic ${sessionStorage.getItem('token')}`
-                }
-            });
-            setSelectedFileText(response.data.text);  // Set the text from response
-            setIsLoading(false);  // End loading after the response is received
-        } catch (error) {
-            setError('Failed to convert document to text.');
-            setIsLoading(false);  // End loading if there is an error
-        }
-    };
-
-    // Function to remove files
-    const handleDeleteFile = async (filename) => {
-        try {
-            const response = await axios.post(`http://127.0.0.1:5000/delete_file?filename=${filename}`, {}, {
-                headers: {
-                    'Authorization': `Basic ${sessionStorage.getItem('token')}`
-                }
-            });
-            if (response.status === 200) {
-                setFiles(files.filter(file => file.name !== filename));  // Update state to remove the deleted file from the list
-            } else {
-                setError(response.data.error || 'Failed to delete file.');
-            }
-        } catch (error) {
-            console.error('Failed to delete file:', error);
-            setError(error.response?.data.error || 'Failed to delete file.');
-        }
-    };
-
-    // Effect to run fetchFiles on mount
-    useEffect(() => {
-        fetchFiles();
-    }, []);
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        const formData = new FormData();
-        formData.append('file', file);
-
-        try {
-            await axios.post('http://127.0.0.1:5000/upload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'Authorization': `Basic ${sessionStorage.getItem('token')}`
-                }
-            });
-            setSuccess('File uploaded successfully.');
-            fetchFiles(); // Re-fetch the files list after successful upload
-        } catch (error) {
-            setError(error.response?.data.error || 'Upload failed');
-        }
-    };
 
     const handleLogout = () => {
         sessionStorage.removeItem('token');
         navigate('/');
-        window.dispatchEvent(new Event('loginChange'));  // Notify app of logout
+        window.dispatchEvent(new Event('loginChange'));
     };
 
     return (
         <div>
             <h2>Upload File</h2>
-            <form onSubmit={handleSubmit}>
-                <input type="file" onChange={e => setFile(e.target.files[0])} />
-                <button type="submit">Upload</button>
-            </form>
+            <FileUploadForm setFiles={setFiles} setError={setError} setSuccess={setSuccess} />
+            <ExtractFromUrl
+                setExtractedText={setSelectedFileText} 
+                setTitle={setTitle} 
+                // setTopImage={setTopImage} 
+                setIsLoading={setIsLoading} 
+                setError={setError} 
+            />
             <button onClick={handleLogout}>Log Out</button>
-            {isLoading && <p>Loading...</p>} 
             {success && <p>{success}</p>}
             {error && <p>{error}</p>}
             <h3>Uploaded Files</h3>
@@ -109,17 +55,34 @@ function Upload() {
                 {files.map((file, index) => (
                     <li key={index}>
                         {file.name}
-                        <button onClick={() => handleDocToText(file.name)} disabled={isLoading}>Convert to Text</button>
-                        <button onClick={() => handleDeleteFile(file.name)} style={{ marginLeft: '10px' }}>Delete</button>
+                        <ConvertToTextButton filename={file.name} setOutputText={setSelectedFileText} setLoading={setIsLoading} setError={setError} setTitle={setTitle} />
+                        <DeleteFileButton filename={file.name} setFiles={setFiles} setError={setError} />
                     </li>
                 ))}
             </ul>
-            {selectedFileText && <div>
-                <h3>Document Text</h3>
-                <p>{selectedFileText}</p>
-            </div>}
+            {isLoading ? (
+                <p>Loading...</p>
+            ) : (
+                selectedFileText && (
+                    <div>
+                        <h3>Document Text</h3>
+                        {title && <h3>{title}</h3>}
+                        {/* {topImage && <img src={topImage} alt="Top of the article" style={{ maxWidth: '25%' }} />} */}
+                        <div style={{
+                            maxHeight: '300px',
+                            overflowY: 'auto',
+                            border: '2px solid #000', // Add a border
+                            borderRadius: '10px', // Rounded corners
+                            width: '50%', // Set the width to half of the screen
+                        }}>
+                            {formatText(selectedFileText)}
+                        </div>
+                        <NLP text={selectedFileText} />
+                    </div>
+                )
+            )}
         </div>
-    );    
+    );
 }
 
 export default Upload;
