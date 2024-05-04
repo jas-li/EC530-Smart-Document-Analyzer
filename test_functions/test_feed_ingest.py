@@ -1,6 +1,7 @@
 import sys
-# Append the path to the directory containing the module
-sys.path.append('../flask-app')
+import os
+# Add the parent directory to the Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../flask-app')))
 import pytest
 from unittest.mock import patch, MagicMock
 import feed_ingest
