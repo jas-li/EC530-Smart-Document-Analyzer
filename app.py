@@ -1,9 +1,10 @@
 from flask import Flask, request, jsonify
 from config import Config
-from auth import auth, register
+from auth import auth, register, login
 from secure_upload import upload_file, get_files
-from feed_ingest import convert_file
-from nlp_analysis import extract_keywords, summarize_text
+from feed_ingest import convert_file, extract_web_content
+from nlp_analysis import extract_keywords, summarize_text, analyze_sentiment
+from output_gen import search_nytimes, search_wikipedia, get_word_definitions
 from flask_cors import CORS
 
 # Queuing
@@ -47,6 +48,16 @@ def process_tasks(app):
 @app.route('/register', methods=['POST'])
 def register_route():
     return register()
+
+@app.route('/login', methods=['POST'])
+def login_route():
+    username = request.json.get('username')
+    password = request.json.get('password')
+    
+    if not username or not password:
+        return jsonify({"error": "Username or password missing"}), 400
+    
+    return login(username, password)
 
 @app.route('/upload', methods=['POST'])
 @auth.login_required
@@ -108,8 +119,19 @@ def doc_to_text():
     else:
         return jsonify({"error": text}), status_code
 
+@app.route('/extract_from_url', methods=['POST'])
+def extract_from_url():
+    data = request.get_json()
+    if not data or 'url' not in data:
+        return jsonify({'error': 'URL is required'}), 400
+
+    try:
+        content = extract_web_content(data['url'])
+        return jsonify(content), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/text_keyword', methods=['POST'])
-@auth.login_required
 def text_keyword():
     data = request.get_json()
     if not data:
@@ -140,7 +162,6 @@ def text_keyword():
     return jsonify({"keywords": result}), 200
 
 @app.route('/text_summary', methods=['POST'])
-@auth.login_required
 def text_summary():
     data = request.get_json()
     if not data:
@@ -169,6 +190,44 @@ def text_summary():
     
     # Return the result
     return jsonify({"summary": result}), 200
+
+@app.route('/text_sentiment', methods=['POST'])
+def text_sentiment():
+    data = request.get_json()
+    if not data or 'text' not in data:
+        return jsonify({'error': 'No text provided'}), 400
+
+    sentiment = analyze_sentiment(data['text'])
+    return jsonify({'sentiment': sentiment}), 200
+
+@app.route('/content_links', methods=['GET'])
+def content_links():
+    data = request.args.get('keyword')
+    if not data:
+        return jsonify({'error': 'No keyword provided'}), 400
+
+    keywords = extract_keywords(data)
+
+    # Gather links
+    wikipedia_links = search_wikipedia(keywords[0])  # Simplified to use the first keyword
+    nytimes_links = search_nytimes(keywords[0])
+
+    return jsonify({
+        'wikipedia_links': wikipedia_links,
+        'nytimes_links': nytimes_links
+    }), 200
+
+@app.route('/keyword_def', methods=['GET'])
+def definition_route():
+    word = request.args.get('word')
+    if not word:
+        return jsonify({'error': 'No word provided'}), 400
+
+    definition = get_word_definitions(word)
+    if definition:
+        return jsonify(definition), 200
+    else:
+        return jsonify({'error': 'Definition not found'}), 404
 
 if __name__ == '__main__':
     task_thread = Thread(target=process_tasks, args=(app,))

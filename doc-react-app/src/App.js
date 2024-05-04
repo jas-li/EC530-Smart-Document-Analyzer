@@ -1,15 +1,25 @@
+// App.js
 import React from 'react';
 import './App.css';
-import FileUploader from './FileUploader';
+import { BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+import Register from './components/Register';
+import Upload from './components/Upload';
+import Login from './components/Login';
+import HomePage from './components/HomePage';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <FileUploader />
-      </header>
-    </div>
-  );
+    return (
+        <Router>
+            <div>
+                <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/upload" element={<Upload />} />
+                </Routes>
+            </div>
+        </Router>
+    );
 }
 
 export default App;

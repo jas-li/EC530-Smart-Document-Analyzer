@@ -3,6 +3,7 @@ from flask_httpauth import HTTPBasicAuth
 from pymongo import MongoClient
 import certifi
 import bcrypt
+from base64 import b64encode
 from config import Config
 from hmac import compare_digest
 
@@ -40,3 +41,17 @@ def register():
         "files": []  # Initialize
     })
     return jsonify({"message": "User registered successfully"}), 201
+
+def login(username, password):
+    user_doc = users_collection.find_one({"username": username})
+    if user_doc:
+        stored_password = user_doc["password"]
+        # Mitigate timing attacks
+        if bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8')):
+            # Create Basic Authentication token
+            auth_token = b64encode(f"{username}:{password}".encode('utf-8')).decode('utf-8')
+            return jsonify({"message": "Logged in successfully", "token": auth_token}), 200
+        else:
+            return jsonify({"error": "Incorrect password"}), 401
+    else:      
+        return jsonify({"error": "User does not exist"}), 404

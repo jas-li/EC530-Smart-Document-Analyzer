@@ -14,6 +14,9 @@ from bson import ObjectId
 from auth import auth
 from secure_upload import get_files
 
+# Newspaper3k
+from newspaper import Article
+
 client = MongoClient(Config.MONGODB_KEY, tlsCAFile=certifi.where())
 db = client["app_data"]
 fs = gridfs.GridFS(db)
@@ -68,3 +71,25 @@ def convert_file(filename, user_id):
             return text, 200
         except Exception as e:
             return f"Error: Failed to extract text from image - {str(e)}", 500
+
+# News ingestor
+def extract_web_content(url):
+    # Create an Article object
+    article = Article(url)
+
+    # Download the article
+    article.download()
+
+    # Parse the article
+    article.parse()
+
+    # Extract data
+    return {
+        "title": article.title,
+        "authors": article.authors,
+        "publish_date": article.publish_date,
+        "text": article.text,
+        "top_image": article.top_image,
+        "keywords": article.keywords,
+        "summary": article.summary
+    }
