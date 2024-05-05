@@ -51,7 +51,7 @@ Before you begin, ensure you have the following installed on your machine:
 
 4. **Run locally**
 
-    You can skip steps 2-3 and run the Flask server locally. Ensure you are in the **flask-app** directory.
+    You can skip steps 2-3 and run the Flask server locally. Ensure you are in the `flask-app` directory.
     ```bash
     cd flask-app
     python app.py
