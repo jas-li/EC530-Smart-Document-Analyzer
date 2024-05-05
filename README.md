@@ -54,6 +54,7 @@ Before you begin, ensure you have the following installed on your machine:
     You can skip steps 2-3 and run the Flask server locally. Ensure you are in the `flask-app` directory.
     ```bash
     cd flask-app
+    pip install -r requirements.txt
     python app.py
 
 ## Authentication Endpoints
