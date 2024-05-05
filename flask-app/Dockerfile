@@ -1,26 +1,28 @@
-# Use an official Python runtime as a parent image
-FROM python:3.8-slim
+# Use an official Python runtime as a parent image, matching a version used in your CI
+FROM python:3.11
 
-# Set the working directory to /app
+# Set the working directory in the container
 WORKDIR /app
 
-# Install git and any other dependencies you might need
-RUN apt-get update && \
-    apt-get install -y git && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-# Copy the current directory contents into the container at /app
+# Copy the local directory contents into the container
 COPY . /app
 
 # Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt
 
-# Expose the port the app runs on
-EXPOSE 5000
+# Download NLTK data
+RUN python -c "import nltk; nltk.download(['punkt', 'stopwords', 'vader_lexicon'])"
 
-# Define environment variable (if needed)
-ENV FLASK_ENV production
+# Optionally, run linter and tests
+# RUN flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+# RUN pytest
 
-# Command to run the app
-CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
+# Make port 80 available to the world outside this container
+EXPOSE 80
+
+# # Define environment variable
+# ENV FLASK_ENV production
+
+# Run the application
+CMD ["python", "app.py"]
