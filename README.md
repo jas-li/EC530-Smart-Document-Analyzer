@@ -3,6 +3,59 @@
 ## Overview
 https://github.com/jas-li/EC530-Smart-Document-Analyzer/assets/90875953/c5b60420-e3b4-41cc-9816-d77df349314e
 
+
+Smart Document Analyzer is a Flask-based web application designed to simplify document processing tasks. It provides robust APIs for user management, document upload and deletion, and natural language processing tasks such as keyword extraction, summarization, and sentiment analysis. The application also integrates with external APIs to enrich document content with external sources.
+
+## Features
+
+- **User Authentication:** Secure login and registration system.
+- **Document Management:** Upload, delete, and retrieve documents securely.
+- **NLP Features:** Extract keywords, summarize texts, and analyze sentiments from documents.
+- **External API Integration:** Retrieve related content from Wikipedia and NYTimes based on document content.
+- **Content Extraction:** Convert uploaded documents and images to text; extract content from URLs.
+
+## Technologies Used
+
+- **Flask:** Web framework for building the API.
+- **MongoDB:** Database for storing user and document data.
+- **NLTK:** Library for performing natural language processing tasks.
+- **PyPDF2 and Tesseract:** Libraries for extracting text from PDFs and images.
+- **Docker:** Used for containerizing the application and ensuring consistent environments across development and production.
+
+## Installation
+
+### Prerequisites
+
+Before you begin, ensure you have the following installed on your machine:
+- **Docker**: Needed to build and run the application in a container. You can download Docker from [here](https://www.docker.com/products/docker-desktop).
+
+### Steps
+
+1. **Clone the Repository**
+
+   ```bash
+   git clone https://github.com/jas-li/EC530-Smart-Document-Analyzer.git
+   cd EC530-Smart-Document-Analyzer
+
+2. **Build the Docker Image**
+
+    Build a Docker image for the application using the Dockerfile in the project directory.
+    ```bash
+    docker build -t smart-doc-analyzer .
+
+3. **Run the Docker Container**
+
+    Once the image is built, run the container from the image. Map the container's port 80 to port 5000 on your host machine.
+    ```bash
+    docker run -p 5000:80 -d smart-doc-analyzer
+
+4. **Run locally**
+
+    You can skip steps 2-3 and run the Flask server locally. Ensure you are in the **flask-app** directory.
+    ```bash
+    cd flask-app
+    python app.py
+
 ## Authentication Endpoints
 
 ### Register
@@ -100,7 +153,3 @@ https://github.com/jas-li/EC530-Smart-Document-Analyzer/assets/90875953/c5b60420
 - **Description:** Retrieves definitions for a specified word.
 - **Parameters:** `word` in request args.
 - **Response:** Definitions or an error message.
-
-## Running the Application
-
-Host the Flask application with `python app.py`.
